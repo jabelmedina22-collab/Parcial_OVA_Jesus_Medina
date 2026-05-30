@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA – Teoría de la Información | TGS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1a0f;
+    --surface: #162216;
+    --card: #1e2e1e;
+    --border: #2d4a2d;
+    --accent: #4ade80;
+    --accent2: #fb923c;
+    --accent3: #f472b6;
+    --text: #e8f5e8;
+    --muted: #7aad7a;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #facc15;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10,22,10,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 0; height: 60px;
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: .85rem; color: var(--accent);
+    margin-right: auto; letter-spacing: .05em;
+  }
+  .nav-links { display: flex; gap: .25rem; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: .78rem;
+    padding: .35rem .65rem; border-radius: 4px; transition: all .2s;
+    font-family: var(--mono);
+  }
+  .nav-links a:hover { color: var(--accent); background: rgba(74,222,128,.08); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: .07;
+    background-image:
+      linear-gradient(var(--accent) 1px, transparent 1px),
+      linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(74,222,128,.15) 0%, transparent 70%);
+    top: -100px; right: -100px; pointer-events: none;
+  }
+  .hero-inner { max-width: 900px; margin: 0 auto; position: relative; }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .15em;
+    color: var(--accent); border: 1px solid var(--accent);
+    padding: .3rem .8rem; border-radius: 2px; margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  h1 .highlight { color: var(--accent); }
+  .hero-desc {
+    font-size: 1.15rem; color: var(--muted);
+    max-width: 600px; margin-bottom: 2.5rem;
+  }
+  .hero-bits {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); font-size: .7rem;
+    color: rgba(74,222,128,.3); line-height: 1.6;
+    text-align: right; pointer-events: none;
+    display: none;
+  }
+  @media(min-width:900px){ .hero-bits { display: block; } }
+
+  .btn {
+    display: inline-block; padding: .75rem 1.75rem; border-radius: 4px;
+    text-decoration: none; font-weight: 600; cursor: pointer;
+    transition: all .2s; border: none; font-size: .95rem; font-family: var(--sans);
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+  }
+  .btn-primary:hover { background: #33deff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74,222,128,.3); }
+  .btn-outline {
+    background: transparent; color: var(--accent); border: 1px solid var(--accent);
+    margin-left: .75rem;
+  }
+  .btn-outline:hover { background: rgba(74,222,128,.08); transform: translateY(-2px); }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 2rem; }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .section-label {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .15em;
+    color: var(--accent2); text-transform: uppercase; margin-bottom: .5rem;
+  }
+  h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; margin-bottom: 1.5rem;
+  }
+  h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: .75rem; }
+  p { margin-bottom: 1rem; color: var(--muted); }
+  p strong { color: var(--text); }
+
+  .divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.25rem; }
+
+  /* Formula box */
+  .formula {
+    background: #0a1a0a; border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; padding: 1rem 1.5rem; margin: 1.25rem 0;
+    font-family: var(--mono); font-size: .95rem; color: var(--accent);
+    overflow-x: auto;
+  }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content:''; position:absolute; left:.5rem; top:0; bottom:0;
+    width:2px; background: linear-gradient(var(--accent), var(--accent3));
+  }
+  .tl-item { position:relative; margin-bottom:2rem; }
+  .tl-dot {
+    position:absolute; left:-1.65rem; top:.35rem;
+    width:12px; height:12px; border-radius:50%;
+    background: var(--accent); border: 2px solid var(--bg);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .tl-year {
+    font-family:var(--mono); font-size:.75rem; color:var(--accent2);
+    margin-bottom:.25rem;
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-icon {
+    font-size: 2.5rem; margin-bottom: .75rem; display: block;
+  }
+  .tag {
+    display: inline-block; font-size: .72rem; font-family: var(--mono);
+    padding: .2rem .6rem; border-radius: 3px; margin-top: .75rem;
+  }
+  .tag-blue { background: rgba(74,222,128,.12); color: var(--accent); }
+  .tag-orange { background: rgba(251,146,60,.12); color: var(--accent2); }
+  .tag-purple { background: rgba(244,114,182,.12); color: #f9a8d4; }
+  .tag-green { background: rgba(16,185,129,.12); color: var(--green); }
+
+  /* ── EJERCICIOS ── */
+  .exercise {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem;
+  }
+  .exercise h4 {
+    font-family: var(--mono); font-size: .85rem;
+    color: var(--accent2); margin-bottom: .75rem;
+  }
+  .reveal-btn {
+    background: transparent; border: 1px solid var(--accent3);
+    color: #f9a8d4; padding: .5rem 1.25rem; border-radius: 4px;
+    cursor: pointer; font-family: var(--mono); font-size: .8rem;
+    transition: all .2s; margin-top: .75rem;
+  }
+  .reveal-btn:hover { background: rgba(244,114,182,.15); }
+  .solution {
+    display: none; margin-top: 1rem;
+    background: rgba(244,114,182,.07); border-left: 3px solid var(--accent3);
+    padding: 1rem 1.25rem; border-radius: 0 6px 6px 0;
+    font-family: var(--mono); font-size: .88rem;
+  }
+
+  /* ── JUEGO 1: Criptografía Binaria ── */
+  #juego1 { background: #0a1500; }
+  .game-area {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2rem; margin-top: 1.5rem;
+    text-align: center;
+  }
+  .binary-display {
+    font-family: var(--mono); font-size: 1.8rem; letter-spacing: .2em;
+    color: var(--accent); margin: 1.5rem 0; word-break: break-all;
+    min-height: 3rem;
+  }
+  .game-input {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem 1.25rem; border-radius: 6px;
+    font-size: 1.1rem; width: 100%; max-width: 320px;
+    font-family: var(--mono); text-align: center;
+    transition: border-color .2s;
+  }
+  .game-input:focus { outline: none; border-color: var(--accent); }
+  .game-feedback {
+    margin-top: 1rem; font-family: var(--mono); font-size: 1rem;
+    min-height: 1.5rem;
+  }
+  .score-badge {
+    display: inline-block; background: rgba(74,222,128,.1);
+    border: 1px solid var(--accent); border-radius: 20px;
+    padding: .3rem 1rem; font-family: var(--mono); font-size: .85rem;
+    color: var(--accent); margin: .5rem;
+  }
+  .timer-bar-wrap {
+    background: var(--border); border-radius: 4px;
+    height: 6px; margin: 1rem 0; overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%; background: var(--accent);
+    transition: width .1s linear; border-radius: 4px;
+  }
+
+  /* ── JUEGO 2: Huffman Drag ── */
+  #juego2 { background: var(--bg); }
+  .huffman-game {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2rem; margin-top: 1.5rem;
+  }
+  .symbol-list {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    justify-content: center; margin: 1rem 0;
+  }
+  .symbol-chip {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: .4rem .9rem;
+    font-family: var(--mono); font-size: .9rem; cursor: grab;
+    transition: all .15s; user-select: none;
+  }
+  .symbol-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .symbol-chip.dragging { opacity: .4; }
+  .rank-slots {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    justify-content: center; margin: 1rem 0;
+    min-height: 54px;
+  }
+  .rank-slot {
+    background: rgba(74,222,128,.05); border: 2px dashed var(--border);
+    border-radius: 6px; padding: .4rem .9rem; min-width: 80px;
+    text-align: center; font-family: var(--mono); font-size: .9rem;
+    transition: border-color .15s;
+  }
+  .rank-slot.over { border-color: var(--accent); }
+  .rank-slot.filled { border-style: solid; border-color: var(--accent3); }
+  .huff-result {
+    margin-top: 1rem; padding: 1rem; border-radius: 6px;
+    font-family: var(--mono); font-size: .9rem; display: none;
+  }
+  .huff-result.correct { background: rgba(16,185,129,.1); border: 1px solid var(--green); color: var(--green); }
+  .huff-result.wrong { background: rgba(239,68,68,.1); border: 1px solid var(--red); color: var(--red); }
+
+  /* ── QUIZ ── */
+  #quiz { background: #0a1500; }
+  .quiz-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2rem; margin-top: 1.5rem;
+  }
+  .quiz-progress {
+    display: flex; gap: .35rem; margin-bottom: 1.75rem;
+  }
+  .q-dot {
+    height: 5px; flex: 1; border-radius: 3px; background: var(--border);
+    transition: background .3s;
+  }
+  .q-dot.done { background: var(--accent); }
+  .q-dot.current { background: var(--accent2); }
+  .quiz-q {
+    font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--text);
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: .6rem; }
+  .q-opt {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: .85rem 1.25rem; cursor: pointer;
+    font-size: .95rem; transition: all .15s; text-align: left;
+    color: var(--text);
+  }
+  .q-opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(74,222,128,.06); }
+  .q-opt.correct { border-color: var(--green); background: rgba(16,185,129,.12); color: var(--green); }
+  .q-opt.wrong { border-color: var(--red); background: rgba(239,68,68,.1); color: var(--red); }
+  .q-opt:disabled { cursor: default; }
+  .q-feedback {
+    margin-top: .9rem; font-size: .88rem; font-family: var(--mono);
+    min-height: 1.2rem; color: var(--muted);
+  }
+  .quiz-nav {
+    display: flex; justify-content: flex-end; margin-top: 1.25rem;
+  }
+  .quiz-result {
+    text-align: center; padding: 2rem 0;
+  }
+  .score-circle {
+    width: 130px; height: 130px; border-radius: 50%;
+    border: 4px solid var(--accent);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px rgba(74,222,128,.2);
+  }
+  .score-num { font-size: 2.5rem; font-weight: 800; color: var(--accent); line-height:1; }
+  .score-label { font-size: .75rem; color: var(--muted); font-family: var(--mono); }
+  .result-message { font-size: 1.2rem; font-weight: 600; margin: .75rem 0; }
+  .answers-review { margin-top: 1.5rem; text-align: left; }
+  .review-item {
+    padding: .65rem 1rem; border-radius: 6px; margin-bottom: .5rem;
+    font-size: .88rem; display: flex; align-items: flex-start; gap: .6rem;
+  }
+  .review-item.ok { background: rgba(16,185,129,.08); border-left: 3px solid var(--green); }
+  .review-item.bad { background: rgba(239,68,68,.06); border-left: 3px solid var(--red); }
+
+  /* ── VIDEOS ── */
+  .video-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+    transition: transform .2s, border-color .2s;
+    cursor: pointer;
+  }
+  .video-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .video-thumb {
+    position: relative; width: 100%; padding-top: 56.25%; background: #0a1a0a;
+    overflow: hidden;
+  }
+  .video-thumb img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; transition: transform .3s;
+  }
+  .video-card:hover .video-thumb img { transform: scale(1.04); }
+  .play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 62px; height: 62px; background: rgba(0,0,0,.72);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .2s; z-index: 2;
+  }
+  .video-card:hover .play-btn { background: var(--accent); transform: translate(-50%, -50%) scale(1.1); }
+  .play-btn svg { fill: #fff; width: 26px; height: 26px; margin-left: 4px; }
+  .video-card:hover .play-btn svg { fill: var(--bg); }
+  .video-info { padding: 1rem; }
+  .video-info h4 { font-size: .95rem; font-weight: 600; margin-bottom: .3rem; color: var(--text); }
+  .video-info p { font-size: .82rem; color: var(--muted); margin: 0; }
+
+  /* ── CREDITS ── */
+  #creditos { background: var(--surface); border-top: 1px solid var(--border); }
+  .ref-list { list-style: none; }
+  .ref-list li {
+    padding: .6rem 0; border-bottom: 1px solid var(--border);
+    font-size: .88rem; color: var(--muted); font-family: var(--mono);
+    line-height: 1.5;
+  }
+  .ref-list li:last-child { border-bottom: none; }
+  .author-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;
+    display: flex; align-items: center; gap: 1.25rem;
+  }
+  .author-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 800; color: var(--bg); flex-shrink: 0;
+  }
+  .author-info h4 { color: var(--text); font-size: 1rem; font-weight: 700; margin-bottom: .2rem; }
+  .author-info p { font-size: .82rem; margin: 0; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    section { padding: 3.5rem 1.25rem; }
+    .hero-bits { display: none; }
+  }
+
+  /* Scroll animations */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">// TGS · Teoría de la Información</span>
+  <div class="nav-links">
+    <a href="#contexto">Contexto</a>
+    <a href="#teoria">Teoría</a>
+    <a href="#ejemplos">Ejemplos</a>
+    <a href="#ejercicios">Ejercicios</a>
+    <a href="#juego1">Juego 1</a>
+    <a href="#juego2">Juego 2</a>
+    <a href="#videos">Videos</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#creditos">Créditos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">OVA · TGS · Tema 14</div>
+    <h1>Teoría de la<br><span class="highlight">Información</span></h1>
+    <p class="hero-desc">
+      Descubre cómo se mide, transmite y procesa la información en sistemas complejos.
+      Desde Shannon hasta la era del Big Data.
+    </p>
+    <div>
+      <a href="#contexto" class="btn btn-primary">Comenzar</a>
+      <a href="#quiz" class="btn btn-outline">Ir al Quiz</a>
+    </div>
+    <div style="margin-top:2rem; display:flex; gap:2rem; flex-wrap:wrap;">
+      <div><div style="font-size:1.6rem;font-weight:800;color:var(--accent)">6</div><div style="font-size:.78rem;color:var(--muted);font-family:var(--mono)">SECCIONES</div></div>
+      <div><div style="font-size:1.6rem;font-weight:800;color:var(--accent2)">2</div><div style="font-size:.78rem;color:var(--muted);font-family:var(--mono)">JUEGOS</div></div>
+      <div><div style="font-size:1.6rem;font-weight:800;color:#a78bfa">10</div><div style="font-size:.78rem;color:var(--muted);font-family:var(--mono)">PREGUNTAS QUIZ</div></div>
+    </div>
+  </div>
+  <div class="hero-bits">
+    01001001<br>01001110<br>01000110<br>01001111<br>10101010<br>11001100<br>00110011<br>10110100
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTEXTO -->
+<section id="contexto">
+<div class="container">
+  <div class="section-label fade-in">01 / Contextualización</div>
+  <h2 class="fade-in">¿Por qué importa la información?</h2>
+  <p class="fade-in">Vivimos en la <strong>era de la información</strong>. Cada mensaje que envías, cada búsqueda en internet, cada transacción bancaria o llamada telefónica depende de principios matemáticos desarrollados en el siglo XX. La <strong>Teoría de la Información</strong> es la disciplina que establece los fundamentos científicos de cómo cuantificar, almacenar y transmitir información.</p>
+  <p class="fade-in">Dentro de la Teoría General de Sistemas (TGS), la información es uno de los <strong>parámetros más críticos</strong> de cualquier sistema. Un sistema no puede autorregularse, adaptarse ni sobrevivir sin procesar información de su entorno. Shannon (1948) demostró que la información puede medirse con la misma precisión que la energía o la masa.</p>
+
+  <div class="grid-3" style="margin-top:2rem;">
+    <div class="card fade-in">
+      <span class="concept-icon">📡</span>
+      <h3>Telecomunicaciones</h3>
+      <p>La teoría de Shannon permitió diseñar los protocolos que hacen posible Internet, WiFi, 4G/5G y las comunicaciones satelitales.</p>
+      <span class="tag tag-blue">Aplicación real</span>
+    </div>
+    <div class="card fade-in">
+      <span class="concept-icon">🧬</span>
+      <h3>Biología Informacional</h3>
+      <p>El ADN puede entenderse como un canal de información. La genómica aplica entropía de Shannon para analizar secuencias biológicas.</p>
+      <span class="tag tag-green">Interdisciplinar</span>
+    </div>
+    <div class="card fade-in">
+      <span class="concept-icon">🤖</span>
+      <h3>Inteligencia Artificial</h3>
+      <p>Los árboles de decisión y redes neuronales usan <em>ganancia de información</em> y <em>entropía cruzada</em> como funciones de optimización.</p>
+      <span class="tag tag-purple">IA & ML</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TEORÍA -->
+<section id="teoria">
+<div class="container">
+  <div class="section-label fade-in">02 / Marco Teórico</div>
+  <h2 class="fade-in">Fundamentos de la Teoría de la Información</h2>
+
+  <h3 class="fade-in" style="color:var(--accent);margin-top:1.5rem">2.1 Orígenes históricos</h3>
+  <div class="timeline fade-in">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1948</div>
+      <p><strong>Claude Shannon</strong> publica "A Mathematical Theory of Communication" en Bell System Technical Journal. Establece el concepto de bit y la fórmula de entropía.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1949</div>
+      <p>Shannon y Weaver publican "The Mathematical Theory of Communication" como libro, popularizando el <strong>modelo de comunicación</strong> fuente–canal–destino.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1960–70s</div>
+      <p>Desarrollo de códigos de corrección de errores (Hamming, Reed-Solomon). La teoría se aplica en criptografía, estadística y lingüística computacional.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1990–presente</div>
+      <p>Auge de la compresión digital (MP3, JPEG, ZIP), Big Data e IA. La información se convierte en el recurso estratégico del siglo XXI.</p>
+    </div>
+  </div>
+
+  <h3 class="fade-in" style="color:var(--accent);margin-top:2.5rem">2.2 Conceptos fundamentales</h3>
+  <div class="grid-2" style="margin-top:1rem">
+    <div class="card fade-in">
+      <h3>📐 Bit y unidades de información</h3>
+      <p>El <strong>bit</strong> (binary digit) es la unidad mínima de información: representa una elección entre dos posibilidades igualmente probables (0 o 1). La cantidad de bits necesarios para representar N equiprobables es log₂(N).</p>
+      <span class="tag tag-blue">Fundamental</span>
+    </div>
+    <div class="card fade-in">
+      <h3>🌡️ Entropía de Shannon</h3>
+      <p>Mide la <strong>incertidumbre</strong> o cantidad promedio de información de una fuente. Cuanto mayor la entropía, más información contiene cada mensaje. Se maximiza cuando todos los eventos son equiprobables.</p>
+      <span class="tag tag-orange">Central</span>
+    </div>
+    <div class="card fade-in">
+      <h3>📦 Redundancia</h3>
+      <p>Es la diferencia entre la entropía máxima posible y la entropía real. Lenguajes naturales tienen alta redundancia (~50% en español), lo que permite corrección de errores en la comunicación.</p>
+      <span class="tag tag-green">Práctico</span>
+    </div>
+    <div class="card fade-in">
+      <h3>📶 Capacidad del canal</h3>
+      <p>El <strong>Teorema de Shannon-Hartley</strong> establece la tasa máxima de información (en bits/s) que puede transmitirse confiablemente a través de un canal con ruido: C = B·log₂(1 + S/N).</p>
+      <span class="tag tag-purple">Ingeniería</span>
+    </div>
+    <div class="card fade-in">
+      <h3>🗜️ Compresión de datos</h3>
+      <p>La <strong>codificación de Huffman</strong> asigna códigos binarios más cortos a símbolos más frecuentes. Es la base de ZIP, PNG y muchos formatos de compresión sin pérdida.</p>
+      <span class="tag tag-blue">Aplicado</span>
+    </div>
+    <div class="card fade-in">
+      <h3>🔐 Criptografía informacional</h3>
+      <p>La entropía mide la <strong>fuerza de una clave criptográfica</strong>. Una contraseña de alta entropía es impredecible. Shannon demostró que el cifrado perfecto requiere claves tan largas como el mensaje.</p>
+      <span class="tag tag-orange">Seguridad</span>
+    </div>
+  </div>
+
+  <h3 class="fade-in" style="color:var(--accent);margin-top:2.5rem">2.3 Fórmulas clave</h3>
+  <p class="fade-in">La <strong>Entropía de Shannon H(X)</strong> para una variable aleatoria X con n resultados posibles:</p>
+  <div class="formula fade-in">H(X) = −Σ p(xᵢ) · log₂(p(xᵢ))</div>
+  <p class="fade-in">Donde p(xᵢ) es la probabilidad del símbolo i. Si todos los símbolos son equiprobables (p = 1/n):</p>
+  <div class="formula fade-in">H(X) = log₂(n)  →  Máxima entropía</div>
+  <p class="fade-in">La <strong>Capacidad de canal de Shannon-Hartley</strong>:</p>
+  <div class="formula fade-in">C = B · log₂(1 + S/N)
+  &nbsp;
+  Donde: B = ancho de banda (Hz)
+         S = potencia de la señal
+         N = potencia del ruido</div>
+
+  <h3 class="fade-in" style="color:var(--accent);margin-top:2.5rem">2.4 Relación con la TGS</h3>
+  <div class="card fade-in" style="border-color:var(--accent3)">
+    <p>En la Teoría General de Sistemas, la <strong>información es el flujo que permite la retroalimentación</strong>. Norbert Wiener, padre de la cibernética, estableció que todo sistema de control —biológico, mecánico o social— opera procesando información para reducir la entropía interna y mantener la homeostasis. Sin flujo de información, un sistema se degrada y no puede adaptarse al entorno (principio de la 2ª ley de la termodinámica aplicada a sistemas abiertos).</p>
+    <p style="margin:0">La entropía termodinámica de Boltzmann (S = k·lnW) y la entropía de Shannon tienen la misma forma matemática, lo que sugiere una <strong>unidad profunda entre información y energía</strong> en el universo.</p>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EJEMPLOS -->
+<section id="ejemplos" style="background:#0a1500">
+<div class="container">
+  <div class="section-label fade-in">03 / Ejemplos Prácticos</div>
+  <h2 class="fade-in">Casos reales de la Teoría de la Información</h2>
+
+  <div class="grid-2" style="margin-top:1.5rem">
+    <div class="card fade-in">
+      <span class="concept-icon">💾</span>
+      <h3>Ejemplo 1: Compresión ZIP</h3>
+      <p>Cuando comprimís un archivo de texto en ZIP, el algoritmo detecta patrones repetidos (alta redundancia) y los reemplaza con referencias más cortas. Un texto con muchas repeticiones puede comprimirse al 10% de su tamaño original. La entropía del texto determina el límite teórico de compresión.</p>
+      <div class="formula" style="font-size:.78rem">Ratio de compresión = 1 − (H_real / H_max)</div>
+    </div>
+    <div class="card fade-in">
+      <span class="concept-icon">📱</span>
+      <h3>Ejemplo 2: Señal 5G</h3>
+      <p>Las redes 5G utilizan el teorema de Shannon-Hartley para maximizar la capacidad. Con un ancho de banda de 100 MHz y una relación S/N de 1000:1, la capacidad máxima teórica es aproximadamente <strong>1 Gbps por celda</strong>. Esto explica por qué el 5G necesita más antenas (mayor B) y menor ruido.</p>
+      <div class="formula" style="font-size:.78rem">C = 100×10⁶ · log₂(1001) ≈ 997 Mbps</div>
+    </div>
+    <div class="card fade-in">
+      <span class="concept-icon">🧠</span>
+      <h3>Ejemplo 3: Árbol de Decisión (IA)</h3>
+      <p>En el algoritmo ID3 de machine learning, cada nodo del árbol se construye eligiendo el atributo que maximiza la <strong>ganancia de información</strong> = H(padres) − H(hijos). Esto garantiza que cada pregunta del árbol resuelva la máxima incertidumbre posible.</p>
+      <div class="formula" style="font-size:.78rem">Ganancia(A) = H(S) − Σ (|Sᵥ|/|S|)·H(Sᵥ)</div>
+    </div>
+    <div class="card fade-in">
+      <span class="concept-icon">🦠</span>
+      <h3>Ejemplo 4: ADN como canal</h3>
+      <p>El ADN tiene 4 bases (A, T, C, G). Si fueran equiprobables, la entropía sería log₂(4) = <strong>2 bits por base</strong>. El genoma humano tiene ~3×10⁹ bases, lo que equivale a ~750 MB de información genética. Las mutaciones son "errores" en este canal biológico de transmisión.</p>
+      <div class="formula" style="font-size:.78rem">H_max(ADN) = log₂(4) = 2 bits/base</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EJERCICIOS -->
+<section id="ejercicios">
+<div class="container">
+  <div class="section-label fade-in">04 / Ejercicios Resueltos</div>
+  <h2 class="fade-in">Practica con retroalimentación</h2>
+  <p class="fade-in">Intenta resolver cada ejercicio antes de revelar la solución.</p>
+
+  <div class="exercise fade-in">
+    <h4>EJERCICIO 1 — Entropía básica</h4>
+    <p>Una moneda perfectamente justa se lanza al aire. ¿Cuánta información (en bits) contiene el resultado?</p>
+    <p style="color:var(--muted); font-size:.9rem"><strong>Datos:</strong> P(cara) = 0.5, P(sello) = 0.5</p>
+    <button class="reveal-btn" onclick="toggleSol(this)">Revelar solución ▼</button>
+    <div class="solution">
+H(X) = −[0.5·log₂(0.5) + 0.5·log₂(0.5)]
+     = −[0.5·(−1) + 0.5·(−1)]
+     = −[−0.5 − 0.5]
+     = 1 bit
+
+✅ Una moneda justa produce exactamente 1 bit de información por lanzamiento.
+Esto define el BIT: la información de elegir entre dos opciones equiprobables.
+    </div>
+  </div>
+
+  <div class="exercise fade-in">
+    <h4>EJERCICIO 2 — Entropía de un dado</h4>
+    <p>Un dado estándar de 6 caras perfectamente balanceado. ¿Cuál es su entropía en bits?</p>
+    <button class="reveal-btn" onclick="toggleSol(this)">Revelar solución ▼</button>
+    <div class="solution">
+p(xᵢ) = 1/6 ≈ 0.1667  para cada cara i = 1..6
+
+H(X) = −6 × [1/6 · log₂(1/6)]
+     = −6 × [1/6 · (−log₂6)]
+     = log₂(6)
+     ≈ 2.585 bits
+
+✅ El dado contiene ~2.585 bits de información por lanzamiento.
+Necesitarías al menos 3 bits (2³=8 > 6) para codificarlo digitalmente.
+    </div>
+  </div>
+
+  <div class="exercise fade-in">
+    <h4>EJERCICIO 3 — Fuente desequilibrada</h4>
+    <p>Una fuente emite tres símbolos con probabilidades: P(A) = 0.5, P(B) = 0.25, P(C) = 0.25. ¿Cuál es su entropía?</p>
+    <button class="reveal-btn" onclick="toggleSol(this)">Revelar solución ▼</button>
+    <div class="solution">
+H(X) = −[0.5·log₂(0.5) + 0.25·log₂(0.25) + 0.25·log₂(0.25)]
+     = −[0.5·(−1) + 0.25·(−2) + 0.25·(−2)]
+     = −[−0.5 − 0.5 − 0.5]
+     = 1.5 bits
+
+Comparación con máxima entropía posible (3 símbolos):
+H_max = log₂(3) ≈ 1.585 bits
+
+Redundancia = 1 − (1.5 / 1.585) ≈ 5.4%
+
+✅ La distribución desequilibrada reduce la entropía: hay menos incertidumbre
+porque el símbolo A aparece con mucha mayor frecuencia.
+    </div>
+  </div>
+
+  <div class="exercise fade-in">
+    <h4>EJERCICIO 4 — Capacidad de canal</h4>
+    <p>Un canal WiFi tiene ancho de banda B = 20 MHz y relación señal-ruido S/N = 63. ¿Cuál es su capacidad máxima teórica?</p>
+    <button class="reveal-btn" onclick="toggleSol(this)">Revelar solución ▼</button>
+    <div class="solution">
+C = B · log₂(1 + S/N)
+  = 20×10⁶ · log₂(1 + 63)
+  = 20×10⁶ · log₂(64)
+  = 20×10⁶ · 6
+  = 120 Mbps
+
+✅ La capacidad máxima teórica es 120 Mbps.
+Nota: En la práctica, el WiFi real es menor (~60-80 Mbps) por overhead
+de protocolos, colisiones y variaciones del ruido.
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- JUEGO 1 -->
+<section id="juego1">
+<div class="container">
+  <div class="section-label fade-in">05 / Juego Interactivo 1</div>
+  <h2 class="fade-in">Descifrador Binario</h2>
+  <p class="fade-in">Convierte el código ASCII binario a la letra correcta antes de que se acabe el tiempo. Cada acierto suma 10 puntos. ¡Mejora tu velocidad!</p>
+
+  <div class="game-area fade-in">
+    <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+      <span class="score-badge">Puntaje: <span id="g1-score">0</span></span>
+      <span class="score-badge">Ronda: <span id="g1-round">0</span>/10</span>
+      <span class="score-badge">Racha: <span id="g1-streak">0</span>🔥</span>
+    </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="g1-bar" style="width:100%"></div></div>
+    <div class="binary-display" id="g1-binary">Presiona START para comenzar</div>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:.75rem">¿Qué letra ASCII representa este binario?</p>
+    <input type="text" class="game-input" id="g1-input" maxlength="1" placeholder="Escribe la letra" disabled>
+    <div class="game-feedback" id="g1-feedback"></div>
+    <button class="btn btn-primary" id="g1-btn" onclick="startGame1()" style="margin-top:1rem">START</button>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- JUEGO 2 -->
+<section id="juego2">
+<div class="container">
+  <div class="section-label fade-in">06 / Juego Interactivo 2</div>
+  <h2 class="fade-in">Ordenador de Huffman</h2>
+  <p class="fade-in">La codificación de Huffman asigna códigos <strong>más cortos a símbolos más frecuentes</strong>. Ordena los símbolos de <strong>mayor a menor frecuencia</strong> arrastrándolos a los espacios correctos.</p>
+
+  <div class="huffman-game fade-in" id="huffman-container">
+    <div id="huff-question" style="text-align:center;margin-bottom:1rem;color:var(--muted);font-family:var(--mono);font-size:.9rem"></div>
+    <div style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:.5rem">Símbolos disponibles (arrastra):</div>
+    <div class="symbol-list" id="huff-source"></div>
+    <div style="text-align:center;color:var(--muted);font-size:.85rem;margin:.75rem 0 .5rem">Orden de mayor a menor frecuencia:</div>
+    <div class="rank-slots" id="huff-slots"></div>
+    <div class="huff-result" id="huff-result"></div>
+    <div style="text-align:center;margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="checkHuffman()">Verificar orden</button>
+      <button class="btn btn-outline" onclick="nextHuffRound()">Nuevo reto</button>
+      <button class="reveal-btn" onclick="showHuffSolution()">Ver solución</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VIDEOS -->
+<section id="videos" style="background:#0a1500">
+<div class="container">
+  <div class="section-label fade-in">07 / Videos Educativos</div>
+  <h2 class="fade-in">Aprende con material audiovisual</h2>
+  <p class="fade-in">Videos seleccionados para profundizar en los conceptos de la Teoría de la Información.</p>
+
+  <div class="grid-2" style="margin-top:1.5rem">
+    <div class="video-card fade-in" onclick="window.open('https://www.youtube.com/watch?v=ErfnhcEV1O8','_blank')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/ErfnhcEV1O8/hqdefault.jpg" alt="Entropía de Shannon" loading="lazy">
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="video-info">
+        <h4>¿Cuánta información contiene un mensaje? — Entropía</h4>
+        <p>3Blue1Brown explica visualmente la entropía de Shannon y cómo cuantificar la información. Con animaciones y ejemplos intuitivos.</p>
+      </div>
+    </div>
+    <div class="video-card fade-in" onclick="window.open('https://www.youtube.com/watch?v=B3y0RsVCyrw','_blank')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/B3y0RsVCyrw/hqdefault.jpg" alt="Codificación de Huffman" loading="lazy">
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="video-info">
+        <h4>Codificación de Huffman — Compresión sin pérdida</h4>
+        <p>Cómo funciona el algoritmo de Huffman para comprimir datos asignando códigos binarios más cortos a los símbolos más frecuentes.</p>
+      </div>
+    </div>
+    <div class="video-card fade-in" onclick="window.open('https://www.youtube.com/watch?v=2s3aJfRr9gE','_blank')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/2s3aJfRr9gE/hqdefault.jpg" alt="Teoría de la Información Shannon" loading="lazy">
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="video-info">
+        <h4>Teoría de la Información de Shannon — Fundamentos</h4>
+        <p>Introducción completa a la teoría matemática de la comunicación: bits, entropía, canales con ruido y el teorema de Shannon.</p>
+      </div>
+    </div>
+    <div class="video-card fade-in" onclick="window.open('https://www.youtube.com/watch?v=PtS6A0UJwuM','_blank')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/PtS6A0UJwuM/hqdefault.jpg" alt="Información en la TGS" loading="lazy">
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="video-info">
+        <h4>Información en la Teoría General de Sistemas</h4>
+        <p>La información como parámetro clave en la TGS: retroalimentación, cibernética y sistemas autorregulados según Wiener y Bertalanffy.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUIZ -->
+<section id="quiz">
+<div class="container">
+  <div class="section-label fade-in">08 / Evaluación</div>
+  <h2 class="fade-in">Quiz — Teoría de la Información</h2>
+  <p class="fade-in">10 preguntas de selección múltiple. Recibirás retroalimentación inmediata en cada pregunta y tu puntaje final.</p>
+
+  <div class="quiz-wrap fade-in" id="quiz-wrap">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-body"></div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CRÉDITOS -->
+<section id="creditos">
+<div class="container">
+  <div class="section-label">09 / Créditos</div>
+  <h2>Ficha Técnica</h2>
+
+  <div class="author-card">
+    <div class="author-avatar">JM</div>
+    <div class="author-info">
+      <h4>MEDINA PEÑA JESUS ABEL</h4>
+      <p>Estudiante — Tema 14: Teoría de la Información</p>
+      <p>Asignatura: Teoría General de Sistemas (TGS) · Universidad Simón Bolívar · Sede Cúcuta</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>🛠️ Herramientas utilizadas</h3>
+      <p>HTML5, CSS3, JavaScript Vanilla, Claude AI (generación de código), Google Fonts, YouTube (videos curados).</p>
+    </div>
+    <div class="card">
+      <h3>🎯 Objetivos logrados</h3>
+      <p>Marco conceptual, ejemplos aplicados, 4 ejercicios con retroalimentación, 2 juegos interactivos, 4 videos, quiz de 10 preguntas con puntaje automático.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:2.5rem;margin-bottom:1rem;color:var(--accent)">Referencias bibliográficas</h3>
+  <ul class="ref-list">
+    <li>Shannon, C. E. (1948). <em>A Mathematical Theory of Communication</em>. Bell System Technical Journal, 27(3), 379–423. https://doi.org/10.1002/j.1538-7305.1948.tb01338.x</li>
+    <li>Shannon, C. E., & Weaver, W. (1949). <em>The Mathematical Theory of Communication</em>. University of Illinois Press.</li>
+    <li>Cover, T. M., & Thomas, J. A. (2006). <em>Elements of Information Theory</em> (2nd ed.). Wiley-Interscience.</li>
+    <li>Wiener, N. (1948). <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em>. MIT Press.</li>
+    <li>Bertalanffy, L. von (1968). <em>General System Theory: Foundations, Development, Applications</em>. George Braziller.</li>
+    <li>Mackay, D. J. C. (2003). <em>Information Theory, Inference, and Learning Algorithms</em>. Cambridge University Press. Disponible en: http://www.inference.org.uk/mackay/itila/</li>
+    <li>Huffman, D. A. (1952). A method for the construction of minimum-redundancy codes. <em>Proceedings of the IRE</em>, 40(9), 1098–1101.</li>
+    <li>Hartley, R. V. L. (1928). Transmission of information. <em>Bell System Technical Journal</em>, 7(3), 535–563.</li>
+  </ul>
+
+  <p style="margin-top:2rem;text-align:center;font-family:var(--mono);font-size:.78rem;color:var(--border)">
+    OVA desarrollada con fines académicos · Universidad Simón Bolívar · 2025<br>
+    Todo el contenido es de uso educativo y referencia fuentes académicas verificadas.
+  </p>
+</div>
+</section>
+
+<script>
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold: 0.1});
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ── EXERCISE TOGGLE ──
+function toggleSol(btn) {
+  const sol = btn.nextElementSibling;
+  sol.style.display = sol.style.display === 'block' ? 'none' : 'block';
+  btn.textContent = sol.style.display === 'block' ? 'Ocultar solución ▲' : 'Revelar solución ▼';
+}
+
+// ── JUEGO 1: DECODIFICADOR BINARIO ──
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let g1Score = 0, g1Round = 0, g1Streak = 0, g1Timer, g1Interval, g1Current = '', g1Running = false;
+
+function charToBin(c) {
+  return c.charCodeAt(0).toString(2).padStart(8,'0');
+}
+
+function startGame1() {
+  g1Score = 0; g1Round = 0; g1Streak = 0; g1Running = true;
+  document.getElementById('g1-btn').textContent = 'Jugando...';
+  document.getElementById('g1-btn').disabled = true;
+  document.getElementById('g1-input').disabled = false;
+  document.getElementById('g1-input').focus();
+  document.getElementById('g1-feedback').textContent = '';
+  document.getElementById('g1-score').textContent = '0';
+  document.getElementById('g1-round').textContent = '0';
+  document.getElementById('g1-streak').textContent = '0';
+  nextLetterG1();
+}
+
+function nextLetterG1() {
+  if (g1Round >= 10) { endGame1(); return; }
+  clearInterval(g1Interval);
+  g1Current = letters[Math.floor(Math.random()*26)];
+  document.getElementById('g1-binary').textContent = charToBin(g1Current);
+  document.getElementById('g1-input').value = '';
+  document.getElementById('g1-feedback').textContent = '';
+  g1Round++;
+  document.getElementById('g1-round').textContent = g1Round;
+  let timeLeft = 100;
+  document.getElementById('g1-bar').style.width = '100%';
+  document.getElementById('g1-bar').style.background = 'var(--accent)';
+  g1Interval = setInterval(() => {
+    timeLeft -= 2;
+    document.getElementById('g1-bar').style.width = timeLeft + '%';
+    if (timeLeft < 40) document.getElementById('g1-bar').style.background = 'var(--yellow)';
+    if (timeLeft < 20) document.getElementById('g1-bar').style.background = 'var(--red)';
+    if (timeLeft <= 0) {
+      clearInterval(g1Interval);
+      document.getElementById('g1-feedback').style.color = 'var(--red)';
+      document.getElementById('g1-feedback').textContent = '⏰ Tiempo! Era la letra ' + g1Current;
+      g1Streak = 0;
+      document.getElementById('g1-streak').textContent = '0';
+      setTimeout(nextLetterG1, 1200);
+    }
+  }, 50);
+}
+
+document.getElementById('g1-input').addEventListener('input', function() {
+  if (!g1Running) return;
+  const val = this.value.toUpperCase();
+  if (val.length === 1) {
+    clearInterval(g1Interval);
+    if (val === g1Current) {
+      g1Score += 10; g1Streak++;
+      if (g1Streak >= 3) g1Score += 5; // bonus racha
+      document.getElementById('g1-feedback').style.color = 'var(--green)';
+      document.getElementById('g1-feedback').textContent = '✅ ¡Correcto! +10 pts' + (g1Streak>=3?' +5 racha!':'');
+    } else {
+      g1Streak = 0;
+      document.getElementById('g1-feedback').style.color = 'var(--red)';
+      document.getElementById('g1-feedback').textContent = '❌ Era: ' + g1Current + ' (ASCII ' + g1Current.charCodeAt(0) + ')';
+    }
+    document.getElementById('g1-score').textContent = g1Score;
+    document.getElementById('g1-streak').textContent = g1Streak;
+    setTimeout(nextLetterG1, 900);
+  }
+});
+
+function endGame1() {
+  g1Running = false;
+  document.getElementById('g1-input').disabled = true;
+  document.getElementById('g1-binary').textContent = '¡Fin del juego!';
+  const pct = Math.round(g1Score/100*100);
+  document.getElementById('g1-feedback').style.color = 'var(--accent)';
+  document.getElementById('g1-feedback').textContent =
+    `🏆 Puntaje final: ${g1Score}/100 (${pct}%) ${g1Score>=80?'¡Excelente!':g1Score>=50?'¡Bien!':'¡Practica más!'}`;
+  document.getElementById('g1-btn').textContent = 'Jugar de nuevo';
+  document.getElementById('g1-btn').disabled = false;
+  document.getElementById('g1-bar').style.width = '0%';
+}
+
+// ── JUEGO 2: HUFFMAN DRAG ──
+const huffRounds = [
+  { symbols: [{s:'A',f:45},{s:'B',f:13},{s:'C',f:12},{s:'D',f:16},{s:'E',f:9},{s:'F',f:5}],
+    label: 'Texto con 100 caracteres (A=45, B=13, C=12, D=16, E=9, F=5)' },
+  { symbols: [{s:'X',f:70},{s:'Y',f:20},{s:'Z',f:10}],
+    label: 'Texto con 100 caracteres (X=70, Y=20, Z=10)' },
+  { symbols: [{s:'M',f:30},{s:'N',f:25},{s:'O',f:20},{s:'P',f:15},{s:'Q',f:10}],
+    label: 'Frecuencias: M=30, N=25, O=20, P=15, Q=10' },
+  { symbols: [{s:'0',f:50},{s:'1',f:30},{s:'2',f:15},{s:'3',f:5}],
+    label: 'Dígitos: 0=50%, 1=30%, 2=15%, 3=5%' },
+];
+let currentHuff = 0, huffOrder = [], draggedChip = null, slotContents = [];
+
+function initHuffRound(idx) {
+  const round = huffRounds[idx];
+  document.getElementById('huff-question').textContent = '📊 ' + round.label;
+  const shuffled = [...round.symbols].sort(() => Math.random() - .5);
+  slotContents = new Array(round.symbols.length).fill(null);
+  huffOrder = [...round.symbols].sort((a,b)=>b.f-a.f).map(x=>x.s);
+
+  const src = document.getElementById('huff-source');
+  src.innerHTML = '';
+  shuffled.forEach(item => {
+    const chip = document.createElement('div');
+    chip.className = 'symbol-chip';
+    chip.textContent = item.s + ' (' + item.f + ')';
+    chip.dataset.sym = item.s;
+    chip.draggable = true;
+    chip.addEventListener('dragstart', e => { draggedChip = chip; chip.classList.add('dragging'); e.dataTransfer.setData('text/plain', item.s); });
+    chip.addEventListener('dragend', () => { chip.classList.remove('dragging'); draggedChip = null; });
+    src.appendChild(chip);
+  });
+
+  const slots = document.getElementById('huff-slots');
+  slots.innerHTML = '';
+  for (let i = 0; i < round.symbols.length; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'rank-slot';
+    slot.dataset.idx = i;
+    slot.textContent = (i+1) + 'º';
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('over'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault(); slot.classList.remove('over');
+      const sym = e.dataTransfer.getData('text/plain');
+      const prev = slotContents[i];
+      slotContents[i] = sym;
+      slot.textContent = sym;
+      slot.classList.add('filled');
+      // Remove from source
+      const chips = document.querySelectorAll('#huff-source .symbol-chip');
+      chips.forEach(c => { if(c.dataset.sym === sym) c.style.display='none'; });
+      // Restore prev if any
+      if (prev) {
+        chips.forEach(c => { if(c.dataset.sym === prev) c.style.display=''; });
+        slotContents[i] = sym; // already set
+      }
+    });
+    slots.appendChild(slot);
+  }
+  document.getElementById('huff-result').style.display = 'none';
+}
+
+function checkHuffman() {
+  const round = huffRounds[currentHuff];
+  if (slotContents.some(s=>!s)) {
+    document.getElementById('huff-result').className = 'huff-result wrong';
+    document.getElementById('huff-result').style.display = 'block';
+    document.getElementById('huff-result').textContent = '⚠️ Debes colocar todos los símbolos antes de verificar.';
+    return;
+  }
+  const correct = slotContents.every((s,i) => s === huffOrder[i]);
+  const r = document.getElementById('huff-result');
+  r.style.display = 'block';
+  if (correct) {
+    r.className = 'huff-result correct';
+    r.textContent = '✅ ¡Perfecto! El orden correcto es: ' + huffOrder.join(' > ') + '. En Huffman, los símbolos más frecuentes reciben códigos binarios más cortos, reduciendo el tamaño total del mensaje.';
+  } else {
+    r.className = 'huff-result wrong';
+    r.textContent = '❌ No es correcto. El orden correcto por frecuencia (mayor a menor) es: ' + huffOrder.join(' > ');
+  }
+}
+
+function nextHuffRound() {
+  currentHuff = (currentHuff + 1) % huffRounds.length;
+  initHuffRound(currentHuff);
+}
+
+function showHuffSolution() {
+  const r = document.getElementById('huff-result');
+  r.style.display = 'block';
+  r.className = 'huff-result correct';
+  r.textContent = '💡 Solución: ' + huffOrder.join(' > ') + '. Recuerda: mayor frecuencia = código más corto en Huffman.';
+}
+
+initHuffRound(0);
+
+// ── QUIZ ──
+const quizData = [
+  { q: '¿Quién formuló la Teoría Matemática de la Comunicación en 1948?', opts: ['Norbert Wiener','Claude Shannon','Alan Turing','Ludwig von Bertalanffy'], ans: 1, exp: 'Claude Shannon publicó "A Mathematical Theory of Communication" en 1948 en Bell System Technical Journal.' },
+  { q: '¿Cuál es la unidad mínima de información según la teoría de Shannon?', opts: ['Byte','Nibble','Bit','Nat'], ans: 2, exp: 'El bit (binary digit) es la unidad fundamental: representa una elección entre dos posibilidades equiprobables (0 o 1).' },
+  { q: 'La entropía de Shannon es MÁXIMA cuando:', opts: ['Todos los eventos son imposibles','Un evento es certero (p=1)','Todos los eventos tienen la misma probabilidad','La fuente emite solo 1 símbolo'], ans: 2, exp: 'La entropía H(X) = −Σp·log₂(p) alcanza su máximo cuando todos los eventos son equiprobables: H_max = log₂(n).' },
+  { q: 'Para una moneda perfectamente justa, la entropía es:', opts: ['0 bits','0.5 bits','1 bit','2 bits'], ans: 2, exp: 'H = −[0.5·log₂(0.5) + 0.5·log₂(0.5)] = 1 bit. Define la unidad "bit" de información.' },
+  { q: '¿Qué mide la REDUNDANCIA en la teoría de la información?', opts: ['La velocidad de transmisión','La diferencia entre H_max y H_real','La capacidad del canal','El nivel de ruido'], ans: 1, exp: 'Redundancia = H_max − H_real. Indica cuánta capacidad informativa se desperdicia. El español tiene ~50% de redundancia.' },
+  { q: 'En la fórmula de Shannon-Hartley C = B·log₂(1+S/N), ¿qué representa B?', opts: ['Los bits por segundo','La relación señal-ruido','El ancho de banda del canal en Hz','La capacidad máxima'], ans: 2, exp: 'B es el ancho de banda en Hertz. A mayor ancho de banda, mayor capacidad de transmisión, según el teorema de Shannon-Hartley.' },
+  { q: 'La codificación de Huffman asigna los códigos más CORTOS a los símbolos:', opts: ['Menos frecuentes','Más frecuentes','De mayor longitud','Aleatorios'], ans: 1, exp: 'Huffman asigna códigos más cortos a símbolos más frecuentes, reduciendo el tamaño promedio del mensaje. Es la base del compresor ZIP.' },
+  { q: '¿Qué relación existe entre la Teoría de la Información y la TGS?', opts: ['Ninguna, son disciplinas separadas','La información es el flujo que permite retroalimentación en los sistemas','La información solo aplica en sistemas digitales','La TGS rechaza los conceptos de Shannon'], ans: 1, exp: 'En la TGS (Wiener, Bertalanffy), la información es el parámetro que permite la retroalimentación y autorregulación de los sistemas.' },
+  { q: 'Un mensaje con probabilidad p=1 (certeza total) contiene:', opts: ['1 bit','Máxima información','0 bits (ninguna información)','Información infinita'], ans: 2, exp: 'I(x) = log₂(1/p) = log₂(1/1) = 0. Un evento seguro no aporta información porque ya era conocido con certeza.' },
+  { q: '¿Cuántos bits necesitas para representar 1 de 8 símbolos equiprobables?', opts: ['2 bits','3 bits','4 bits','8 bits'], ans: 1, exp: 'H = log₂(8) = 3 bits. Con 3 bits puedes representar 2³ = 8 combinaciones distintas, suficientes para 8 símbolos equiprobables.' },
+];
+
+let qIdx = 0, qScore = 0, qAnswered = [];
+
+function renderQuiz() {
+  const prog = document.getElementById('quiz-progress');
+  prog.innerHTML = '';
+  quizData.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'q-dot' + (i < qIdx ? ' done' : i === qIdx ? ' current' : '');
+    prog.appendChild(dot);
+  });
+
+  if (qIdx >= quizData.length) { showResult(); return; }
+  const q = quizData[qIdx];
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="quiz-q">Pregunta ${qIdx+1} de ${quizData.length}<br>${q.q}</div>
+    <div class="quiz-options" id="q-opts">
+      ${q.opts.map((o,i)=>`<button class="q-opt" onclick="selectOpt(${i})">${o}</button>`).join('')}
+    </div>
+    <div class="q-feedback" id="q-fb"></div>
+    <div class="quiz-nav" id="q-nav" style="display:none">
+      <button class="btn btn-primary" onclick="nextQ()">
+        ${qIdx < quizData.length-1 ? 'Siguiente →' : 'Ver resultados'}
+      </button>
+    </div>
+  `;
+}
+
+function selectOpt(i) {
+  const q = quizData[qIdx];
+  const opts = document.querySelectorAll('.q-opt');
+  opts.forEach(o => o.disabled = true);
+  const isCorrect = i === q.ans;
+  opts[i].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) opts[q.ans].classList.add('correct');
+  document.getElementById('q-fb').textContent = (isCorrect ? '✅ ' : '❌ ') + q.exp;
+  if (isCorrect) qScore++;
+  qAnswered.push({ q: q.q, correct: isCorrect, yourAns: q.opts[i], rightAns: q.opts[q.ans] });
+  document.getElementById('q-nav').style.display = 'flex';
+}
+
+function nextQ() { qIdx++; renderQuiz(); }
+
+function showResult() {
+  const pct = Math.round(qScore/quizData.length*100);
+  const msg = pct >= 90 ? '🏆 ¡Dominas la Teoría de la Información!' :
+              pct >= 70 ? '🎯 ¡Muy buen trabajo!' :
+              pct >= 50 ? '📚 Vas bien, repasa algunos conceptos.' :
+              '💡 Revisa el material y vuelve a intentarlo.';
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="quiz-result">
+      <div class="score-circle">
+        <div class="score-num">${qScore}</div>
+        <div class="score-label">de ${quizData.length}</div>
+      </div>
+      <div class="result-message">${msg}</div>
+      <p style="color:var(--muted)">${pct}% de respuestas correctas</p>
+      <div class="answers-review">
+        ${qAnswered.map(a=>`
+          <div class="review-item ${a.correct?'ok':'bad'}">
+            <span>${a.correct?'✅':'❌'}</span>
+            <div><strong>${a.q}</strong><br>
+            ${a.correct ? `Tu respuesta: ${a.yourAns}` : `Tu respuesta: ${a.yourAns} · Correcta: ${a.rightAns}`}
+            </div>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-primary" style="margin-top:1.5rem" onclick="restartQuiz()">Reintentar quiz</button>
+    </div>
+  `;
+}
+
+function restartQuiz() { qIdx=0; qScore=0; qAnswered=[]; renderQuiz(); }
+
+renderQuiz();
+</script>
+</body>
+</html>
